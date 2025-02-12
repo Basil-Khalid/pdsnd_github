@@ -35,126 +35,71 @@ def load_data(city):
 
 
 def time_stats(df):
-    """Displays statistics on the most frequent times of travel."""
+    """
+    Display statistics on the most frequent travel times.
+    """
     print('\nCalculating The Most Frequent Times of Travel...\n')
     start_time = time.time()
-
-    # Display the most common month (number and name)
-    most_common_month = df['Start Time'].dt.month.mode()[0]
+    
+    # Most common month
     months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    print(f"Most Common Month: {most_common_month} ({months[most_common_month - 1]})")
-
-    # Display the most common day of the week
-    most_common_day = df['Start Time'].dt.day_name().mode()[0]
-    print(f"Most Common Day of Week: {most_common_day}")
-
-    # Display the most common start hour
-    most_common_hour = df['Start Time'].dt.hour.mode()[0]
+    print(f"Most Common Month: {months[df['Start Time'].dt.month.mode()[0] - 1]}")
     
-    # Categorize the time of day
-    if most_common_hour < 12:
-        time_of_day = "Morning"
-    elif most_common_hour == 12:
-        time_of_day = "Noon"
-    elif most_common_hour < 17:
-        time_of_day = "Afternoon"
-    else:
-        time_of_day = "Evening"
+    # Most common day of the week
+    print(f"Most Common Day: {df['Start Time'].dt.day_name().mode()[0]}")
     
-    print(f"Most Common Start Hour: {most_common_hour} ({time_of_day})")
-  
-    print('-'*60)
-
-
-def station_stats(df):
-    """Displays statistics on the most popular stations and trip."""
-    print('\nCalculating The Most Popular Stations and Trip...\n')
-    
-
-    # Most common start station
-    most_common_start_station = df['Start Station'].mode()[0]
-    print(f"Most Common Start Station: {most_common_start_station}")
-
-    # Most common end station
-    most_common_end_station = df['End Station'].mode()[0]
-    print(f"Most Common End Station: {most_common_end_station}")
-
-    # Most frequent combination of start and end stations
-    df['start_to_end'] = df['Start Station'] + " to " + df['End Station']
-    most_common_trip = df['start_to_end'].mode()[0]
-    print(f"Most Common Trip: {most_common_trip}")
-
+    # Most common start hour
+    hour = df['Start Time'].dt.hour.mode()[0]
+    time_period = "Morning" if hour < 12 else "Afternoon" if hour < 18 else "Evening"
+    print(f"Most Common Start Hour: {hour} ({time_period})")
     print('-' * 60)
 
-# Calculate trip duration statistics
+def station_stats(df):
+    """
+    Display statistics on the most popular stations and trips.
+    """
+    print('\nCalculating The Most Popular Stations and Trip...\n')
+    print(f"Most Common Start Station: {df['Start Station'].mode()[0]}")
+    print(f"Most Common End Station: {df['End Station'].mode()[0]}")
+    print(f"Most Common Trip: {(df['Start Station'] + ' to ' + df['End Station']).mode()[0]}")
+    print('-' * 60)
+
 def trip_duration_stats(df):
     """
-    Calculate and print total travel time and average travel time in seconds and hours.
+    Display total and average travel time.
     """
-    # Total travel time in seconds
-    total_travel_time_seconds = df['Trip Duration'].sum()
-    total_travel_time_hours = total_travel_time_seconds / 3600
-    
-    # Average travel time in seconds
-    average_travel_time_seconds = df['Trip Duration'].mean()
-    average_travel_time_hours = average_travel_time_seconds / 3600
-    
-    print(f"Total Travel Time: {total_travel_time_seconds} seconds ({total_travel_time_hours:.2f} hours)")
-    print(f"Average Travel Time: {average_travel_time_seconds:.2f} seconds ({average_travel_time_hours:.2f} hours)")
+    total_seconds = df['Trip Duration'].sum()
+    print(f"Total Travel Time: {total_seconds} seconds ({total_seconds / 3600:.2f} hours)")
+    avg_seconds = df['Trip Duration'].mean()
+    print(f"Average Travel Time: {avg_seconds:.2f} seconds ({avg_seconds / 3600:.2f} hours)")
     print('-' * 60)
 
 def user_stats(df):
-    """Displays statistics on bikeshare users."""
+    """
+    Display bikeshare user statistics.
+    """
     print('\nCalculating User Stats...\n')
-
-    # Counts of user types 
-    print("Counts of each user type:")
-    print("User Type      Counts")
-    user_types = df['User Type'].value_counts()
-    for user_type, count in user_types.items():
-        print(f"{user_type:<15}{count}")
-    print()
-
-    # Gender counts
+    print("User Type Counts:")
+    print(df['User Type'].value_counts().to_string())
     if 'Gender' in df:
-        print("Counts of each gender :")
-        print("Gender         Counts")
-        gender_counts = df['Gender'].value_counts()
-        for gender, count in gender_counts.items():
-            print(f"{gender:<15}{count}")
-        print()
-    else:
-        print("Gender data is not available for this city.\n")
-
-    # Birth year statistics
+        print("\nGender Counts:")
+        print(df['Gender'].value_counts().to_string())
     if 'Birth Year' in df:
-        print("Birth Year Statistics:")
-        earliest_birth_year = int(df['Birth Year'].min())
-        most_recent_birth_year = int(df['Birth Year'].max())
-        most_common_birth_year = int(df['Birth Year'].mode()[0])
-        print(f"Earliest Birth Year: {earliest_birth_year}")
-        print(f"Most Recent Birth Year: {most_recent_birth_year}")
-        print(f"Most Common Birth Year: {most_common_birth_year}")
-    else:
-        print("Birth year data is not available for this city.")
-
+        print("\nBirth Year Statistics:")
+        print(f"Earliest: {int(df['Birth Year'].min())}")
+        print(f"Most Recent: {int(df['Birth Year'].max())}")
+        print(f"Most Common: {int(df['Birth Year'].mode()[0])}")
     print('-' * 60)
 
-
 def display_raw_data(df):
-    """Displays 5 lines of raw data at a time based on user input."""
+    """
+    Display raw data upon user request.
+    """
     row_index = 0
-    while True:
-        # Show next 5 rows
+    while row_index < len(df):
         print(df.iloc[row_index: row_index + 5])
         row_index += 5
-
-        # Ask user if they want to see more data
-        more_data = input("\nDo you want to see 5 more lines of raw data? Enter 'yes' or 'no': ").lower()
-        if more_data != 'yes':
-            break
-        if row_index >= len(df):
-            print("\nNo more data to display.")
+        if input("\nSee 5 more lines? ('yes' to continue): ").lower() != 'yes':
             break
 
 def main():
