@@ -10,32 +10,29 @@ CITY_DATA = {
 
 def choose_city():
     """
-    Asks the user to select a city to analyze.
+    Prompt user to select a city for analysis.
     Returns:
-        (str) city - name of the city to analyze
+        str: Selected city name.
     """
+    city_options = {'1': 'chicago', '2': 'new york city', '3': 'washington'}
     while True:
-        print("\nChoose a city to analyze:")
-        print("1. Chicago")
-        print("2. New York City")
-        print("3. Washington")
-        choice = input("Enter the number corresponding to your choice: ").strip()
-        if choice == '1':
-            return 'chicago'
-        elif choice == '2':
-            return 'new york city'
-        elif choice == '3':
-            return 'washington'
-        else:
-            print("Invalid choice. Please select 1, 2, or 3.")
+        choice = input("\nChoose a city to analyze:\n1. Chicago\n2. New York City\n3. Washington\nEnter the number: ").strip()
+        if choice in city_options:
+            return city_options[choice]
+        print("Invalid choice. Please select 1, 2, or 3.")
 
 def load_data(city):
     """
-    Loads data for the specified city.
+    Load data for the specified city into a DataFrame.
+    Args:
+        city (str): The name of the city.
     Returns:
-        df - Pandas DataFrame containing city data
+        pd.DataFrame: City data.
     """
-    return pd.read_csv(CITY_DATA[city])
+    df = pd.read_csv(CITY_DATA[city])
+    df['Start Time'] = pd.to_datetime(df['Start Time'])
+    return df
+
 
 def time_stats(df):
     """Displays statistics on the most frequent times of travel."""
@@ -162,23 +159,9 @@ def display_raw_data(df):
 
 def main():
     while True:
-        city = choose_city()
-        df = load_data(city)
-        
-        # Convert Start Time to datetime
-        df['Start Time'] = pd.to_datetime(df['Start Time'])
-
+        df = load_data(choose_city())
         while True:
-            print("\nChoose an analysis:")
-            print("1. Popular Times of Travel")
-            print("2. Popular Stations and Trip")
-            print("3. Trip Duration")
-            print("4. User Info")
-            print("5. Display Raw Data")
-            print("6. Exit to Main Menu")
-
-            choice = input("Enter the number corresponding to your choice: ").strip()
-
+            choice = input("\nChoose an analysis:\n1. Travel Times\n2. Stations\n3. Trip Duration\n4. User Info\n5. Raw Data\n6. Exit\nEnter number: ").strip()
             if choice == '1':
                 time_stats(df)
             elif choice == '2':
@@ -192,10 +175,8 @@ def main():
             elif choice == '6':
                 break
             else:
-                print("Invalid choice. Please select a valid option.")
-
-        restart = input("\nWould you like to restart the program? Enter 'yes' or 'no': ").lower()
-        if restart != 'yes':
+                print("Invalid choice. Try again.")
+        if input("\nRestart? ('yes' to continue): ").lower() != 'yes':
             break
 
 if __name__ == "__main__":
