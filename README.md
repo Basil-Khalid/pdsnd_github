@@ -23,5 +23,10 @@ The project utilizes the following files:
 - washington.csv – Dataset for Washington
 - README.md – Documentation for the project
 
+### Usage guide
+- Clone the repository to your local machine:
+- python bikeshare.py
+- Follow the on-screen prompts to filter and analyze the data.
+
 ### Credits
 Udacity’s Data Science Nanodegree program
